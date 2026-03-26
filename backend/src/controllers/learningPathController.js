@@ -1,7 +1,7 @@
-const axios = require('axios');
-const LearningPath = require('../models/LearningPath');
-const SkillAnalysis = require('../models/SkillAnalysis');
-const User = require('../models/User');
+const axios = require("axios");
+const LearningPath = require("../models/LearningPath");
+const SkillAnalysis = require("../models/SkillAnalysis");
+const User = require("../models/User");
 
 // Generate learning path
 exports.generateLearningPath = async (req, res) => {
@@ -10,9 +10,13 @@ exports.generateLearningPath = async (req, res) => {
     const user = await User.findById(userId);
 
     // Get latest skill analysis
-    const skillAnalysis = await SkillAnalysis.findOne({ userId }).sort({ analysisDate: -1 });
+    const skillAnalysis = await SkillAnalysis.findOne({ userId }).sort({
+      analysisDate: -1,
+    });
     if (!skillAnalysis) {
-      return res.status(404).json({ message: 'Please complete diagnostic test first' });
+      return res
+        .status(404)
+        .json({ message: "Please complete diagnostic test first" });
     }
 
     // Request learning path from ML service
@@ -23,8 +27,8 @@ exports.generateLearningPath = async (req, res) => {
         strongTopics: skillAnalysis.strongTopics,
         targetCompany: user.targetCompany,
         skillLevel: skillAnalysis.skillLevel,
-        studyHoursPerDay: user.studyHoursPerDay
-      }
+        studyHoursPerDay: user.studyHoursPerDay,
+      },
     );
 
     const { learningPath, totalDaysEstimated } = pathResponse.data;
@@ -34,17 +38,17 @@ exports.generateLearningPath = async (req, res) => {
       userId,
       targetCompany: user.targetCompany,
       topics: learningPath,
-      totalDaysEstimated
+      totalDaysEstimated,
     });
 
     await path.save();
 
     res.json({
-      message: 'Learning path generated successfully',
+      message: "Learning path generated successfully",
       pathId: path._id,
       learningPath,
       totalDaysEstimated,
-      targetCompany: user.targetCompany
+      targetCompany: user.targetCompany,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -55,10 +59,12 @@ exports.generateLearningPath = async (req, res) => {
 exports.getLearningPath = async (req, res) => {
   try {
     const userId = req.userId;
-    const path = await LearningPath.findOne({ userId }).sort({ generatedAt: -1 });
+    const path = await LearningPath.findOne({ userId }).sort({
+      generatedAt: -1,
+    });
 
     if (!path) {
-      return res.status(404).json({ message: 'Learning path not found' });
+      return res.status(404).json({ message: "Learning path not found" });
     }
 
     res.json(path);
@@ -75,23 +81,23 @@ exports.updateTopicStatus = async (req, res) => {
 
     const path = await LearningPath.findOne({ userId });
     if (!path) {
-      return res.status(404).json({ message: 'Learning path not found' });
+      return res.status(404).json({ message: "Learning path not found" });
     }
 
-    const topic = path.topics.find(t => t.topicName === topicName);
+    const topic = path.topics.find((t) => t.topicName === topicName);
     if (!topic) {
-      return res.status(404).json({ message: 'Topic not found' });
+      return res.status(404).json({ message: "Topic not found" });
     }
 
     topic.status = status;
-    if (status === 'Completed') {
+    if (status === "Completed") {
       topic.completedAt = new Date();
     }
     path.updatedAt = new Date();
 
     await path.save();
 
-    res.json({ message: 'Topic status updated', path });
+    res.json({ message: "Topic status updated", path });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

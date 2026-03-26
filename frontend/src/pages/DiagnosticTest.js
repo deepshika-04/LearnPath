@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { apiClient } from '../utils/api';
-import { authUtils } from '../utils/auth';
-import '../styles/quiz.css';
+import React, { useState, useEffect } from "react";
+import { apiClient } from "../utils/api";
+import { authUtils } from "../utils/auth";
+import "../styles/quiz.css";
 
 function DiagnosticTest() {
   const [questions, setQuestions] = useState([]);
@@ -21,7 +21,7 @@ function DiagnosticTest() {
       setQuestions(data.questions);
       setAnswers(new Array(data.questions.length).fill(null));
     } catch (error) {
-      console.error('Error loading test:', error);
+      console.error("Error loading test:", error);
     } finally {
       setLoading(false);
     }
@@ -50,15 +50,15 @@ function DiagnosticTest() {
       const token = authUtils.getToken();
       const formattedAnswers = answers.map((ans, idx) => ({
         questionId: questions[idx].id,
-        selectedAnswer: ans
+        selectedAnswer: ans,
       }));
 
       const response = await apiClient.submitQuiz(
         {
-          quizType: 'Diagnostic',
-          answers: formattedAnswers
+          quizType: "Diagnostic",
+          answers: formattedAnswers,
         },
-        token
+        token,
       );
 
       setResult(response);
@@ -66,9 +66,9 @@ function DiagnosticTest() {
 
       // Get skill analysis
       const analysis = await apiClient.getSkillAnalysis(response.quizId, token);
-      console.log('Skill analysis:', analysis);
+      console.log("Skill analysis:", analysis);
     } catch (error) {
-      console.error('Error submitting quiz:', error);
+      console.error("Error submitting quiz:", error);
     }
   };
 
@@ -80,17 +80,23 @@ function DiagnosticTest() {
         <h2>Test Results</h2>
         <div className="result-score">
           <h3>Your Score: {result.percentageScore.toFixed(2)}%</h3>
-          <p>Correct Answers: {result.overallScore} / {result.totalQuestions}</p>
+          <p>
+            Correct Answers: {result.overallScore} / {result.totalQuestions}
+          </p>
         </div>
         <div className="result-topics">
           <h4>Topic-wise Performance:</h4>
           <ul>
             {Object.entries(result.topicScores).map(([topic, score]) => (
-              <li key={topic}>{topic}: {score.toFixed(2)}%</li>
+              <li key={topic}>
+                {topic}: {score.toFixed(2)}%
+              </li>
             ))}
           </ul>
         </div>
-        <button onClick={() => window.location.href = '/dashboard'}>Back to Dashboard</button>
+        <button onClick={() => (window.location.href = "/dashboard")}>
+          Back to Dashboard
+        </button>
       </div>
     );
   }
@@ -102,17 +108,24 @@ function DiagnosticTest() {
     <div className="quiz-container">
       <div className="quiz-header">
         <h2>Diagnostic Test</h2>
-        <p>Question {currentQuestion + 1} of {questions.length}</p>
+        <p>
+          Question {currentQuestion + 1} of {questions.length}
+        </p>
         <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+          <div
+            className="progress-fill"
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
       </div>
 
       {question && (
         <div className="quiz-content">
           <h3>{question.question}</h3>
-          <div className="topic-tag">{question.topic} - {question.difficulty}</div>
-          
+          <div className="topic-tag">
+            {question.topic} - {question.difficulty}
+          </div>
+
           <div className="options">
             {question.options.map((option, idx) => (
               <label key={idx} className="option">
@@ -128,33 +141,30 @@ function DiagnosticTest() {
           </div>
 
           <div className="quiz-navigation">
-            <button 
-              onClick={handlePrevious} 
+            <button
+              onClick={handlePrevious}
               disabled={currentQuestion === 0}
               className="nav-btn"
             >
               Previous
             </button>
-            
+
             {currentQuestion === questions.length - 1 ? (
-              <button 
-                onClick={handleSubmit}
-                className="submit-btn"
-              >
+              <button onClick={handleSubmit} className="submit-btn">
                 Submit Test
               </button>
             ) : (
-              <button 
-                onClick={handleNext}
-                className="nav-btn"
-              >
+              <button onClick={handleNext} className="nav-btn">
                 Next
               </button>
             )}
           </div>
 
           <div className="quiz-status">
-            <p>Answered: {answers.filter(a => a !== null).length} / {questions.length}</p>
+            <p>
+              Answered: {answers.filter((a) => a !== null).length} /{" "}
+              {questions.length}
+            </p>
           </div>
         </div>
       )}

@@ -1,48 +1,58 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../utils/api';
-import { authUtils } from '../utils/auth';
-import '../styles/auth.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiClient } from "../utils/api";
+import { authUtils } from "../utils/auth";
+import "../styles/auth.css";
 
 function Register() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    targetCompany: 'Amazon',
-    studyHoursPerDay: 2
+    name: "",
+    email: "",
+    password: "",
+    targetCompany: "Amazon",
+    studyHoursPerDay: 2,
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const companies = ['Amazon', 'Google', 'Microsoft', 'Meta', 'TCS', 'Infosys', 'Wipro', 'Accenture', 'Cognizant'];
+  const companies = [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "Meta",
+    "TCS",
+    "Infosys",
+    "Wipro",
+    "Accenture",
+    "Cognizant",
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === 'studyHoursPerDay' ? parseInt(value) : value
+      [name]: name === "studyHoursPerDay" ? parseInt(value) : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const result = await apiClient.register(formData);
-      
+
       if (result.token) {
         authUtils.setToken(result.token);
         authUtils.setUser(result.user);
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        setError(result.message || 'Registration failed');
+        setError(result.message || "Registration failed");
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -53,9 +63,9 @@ function Register() {
       <div className="auth-box">
         <h1>LearnPath</h1>
         <h2>Register</h2>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -86,8 +96,10 @@ function Register() {
             value={formData.targetCompany}
             onChange={handleChange}
           >
-            {companies.map(company => (
-              <option key={company} value={company}>{company}</option>
+            {companies.map((company) => (
+              <option key={company} value={company}>
+                {company}
+              </option>
             ))}
           </select>
           <input
@@ -101,11 +113,13 @@ function Register() {
             required
           />
           <button type="submit" disabled={loading}>
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        <p>Already have an account? <a href="/login">Login here</a></p>
+        <p>
+          Already have an account? <a href="/login">Login here</a>
+        </p>
       </div>
     </div>
   );

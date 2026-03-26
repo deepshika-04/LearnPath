@@ -3,6 +3,7 @@
 ## 🚀 Get Started in 5 Minutes
 
 ### Prerequisites
+
 - Node.js v14+
 - Python 3.8+
 - MongoDB (local or cloud)
@@ -59,6 +60,7 @@ npm start                   # Opens http://localhost:3000
 ## 🎯 Test the Application
 
 ### 1. Register
+
 - Go to http://localhost:3000/register
 - Fill form with:
   - Name: Test User
@@ -69,37 +71,44 @@ npm start                   # Opens http://localhost:3000
 - Click Register → Redirects to Dashboard
 
 ### 2. Dashboard Overview
+
 - See readiness score: 0%
 - See action cards for all features
 - Topics in progress: 0
 
 ### 3. Take Diagnostic Test
+
 - Click "Start Test" button
 - Answer 25 questions (5 per topic)
 - View results page
 - See topic-wise scores
 
 ### 4. Generate Learning Path
+
 - Click "View Path"
 - System generates personalized roadmap
 - See topics with priorities and estimated days
 
 ### 5. View Resources
+
 - Click "Explore Resources"
 - Select topic (DSA, DBMS, OS, CN, Aptitude)
 - See recommended materials
 
 ### 6. Check Progress
+
 - Click "View Progress"
 - See readiness gauge
 - View topic progress bars
 
 ### 7. Get Study Plan
+
 - Click "Get Schedule"
 - See weekly schedule
 - View daily tasks
 
 ### 8. Take Mock Test
+
 - Click "Take Test"
 - Complete final assessment
 - Get readiness feedback
@@ -119,14 +128,14 @@ Study Hours: 2
 
 ## 🛠️ Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Port already in use | Change port in .env or kill process using port |
-| MongoDB connection error | Ensure MongoDB is running: `mongod` |
-| Module not found | Delete node_modules, run `npm install` again |
-| Python venv error | Delete venv folder, recreate: `python -m venv venv` |
-| CORS errors | Backend CORS already configured |
-| API 404 errors | Ensure all 3 services running on correct ports |
+| Issue                    | Solution                                            |
+| ------------------------ | --------------------------------------------------- |
+| Port already in use      | Change port in .env or kill process using port      |
+| MongoDB connection error | Ensure MongoDB is running: `mongod`                 |
+| Module not found         | Delete node_modules, run `npm install` again        |
+| Python venv error        | Delete venv folder, recreate: `python -m venv venv` |
+| CORS errors              | Backend CORS already configured                     |
+| API 404 errors           | Ensure all 3 services running on correct ports      |
 
 ---
 
@@ -162,31 +171,37 @@ frontend/         → React.js UI
 ## 🔑 Key Features Demo
 
 ### Feature 1: Skill Assessment
+
 - Complete diagnostic test
 - ML models analyze results
 - Get skill level (Beginner/Intermediate/Advanced)
 
 ### Feature 2: Learning Path
+
 - Topological sorting for prerequisites
 - Company-specific priorities
 - Estimated study duration
 
 ### Feature 3: Recommendations
+
 - Cosine similarity algorithm
 - Personalized resources
 - Company-relevant filtering
 
 ### Feature 4: Progress Tracking
+
 - Topic completion percentage
 - Readiness gauge
 - Improvement trends
 
 ### Feature 5: Study Schedule
+
 - Daily tasks generation
 - Weekly schedule planning
 - Adaptive timing based on study hours
 
 ### Feature 6: Mock Test
+
 - Full-length practice test
 - Performance analysis
 - Readiness feedback
@@ -206,6 +221,7 @@ frontend/         → React.js UI
 ## 🌐 Endpoints Reference
 
 ### Most Used
+
 ```
 POST   /api/auth/login              → Login
 POST   /api/auth/register           → Register
@@ -246,6 +262,7 @@ POST   /api/mock-test/submit        → Submit mock
 ## 📈 Next Steps
 
 ### After Quick Start
+
 1. Customize company data
 2. Add more questions to database
 3. Configure ML model hyperparameters
@@ -253,6 +270,7 @@ POST   /api/mock-test/submit        → Submit mock
 5. Add more learning resources
 
 ### Production Deployment
+
 ```bash
 # Frontend
 npm run build
@@ -271,6 +289,7 @@ git push render main
 ## 🆘 Need Help?
 
 ### Check Logs
+
 ```bash
 # Backend logs
 npm run dev
@@ -283,6 +302,7 @@ F12 → Console tab
 ```
 
 ### Common Commands
+
 ```bash
 # Backend
 npm install         # Install dependencies
@@ -319,6 +339,7 @@ npm run build       # Create production build
 ## 🎓 Learning Outcomes
 
 After using LearnPath, students will:
+
 - Understand their skill level objectively
 - Know exactly which topics to focus on
 - Have a personalized study roadmap

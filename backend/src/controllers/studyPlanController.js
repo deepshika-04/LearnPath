@@ -1,7 +1,7 @@
-const axios = require('axios');
-const StudyPlan = require('../models/StudyPlan');
-const LearningPath = require('../models/LearningPath');
-const User = require('../models/User');
+const axios = require("axios");
+const StudyPlan = require("../models/StudyPlan");
+const LearningPath = require("../models/LearningPath");
+const User = require("../models/User");
 
 // Generate study plan
 exports.generateStudyPlan = async (req, res) => {
@@ -10,9 +10,11 @@ exports.generateStudyPlan = async (req, res) => {
     const user = await User.findById(userId);
 
     // Get learning path
-    const learningPath = await LearningPath.findOne({ userId }).sort({ generatedAt: -1 });
+    const learningPath = await LearningPath.findOne({ userId }).sort({
+      generatedAt: -1,
+    });
     if (!learningPath) {
-      return res.status(404).json({ message: 'Learning path not found' });
+      return res.status(404).json({ message: "Learning path not found" });
     }
 
     // Request study plan from ML service
@@ -21,8 +23,8 @@ exports.generateStudyPlan = async (req, res) => {
       {
         learningPath: learningPath.topics,
         studyHoursPerDay: user.studyHoursPerDay,
-        startDate: new Date()
-      }
+        startDate: new Date(),
+      },
     );
 
     const { weeklySchedule, dailyTasks } = planResponse.data;
@@ -31,16 +33,16 @@ exports.generateStudyPlan = async (req, res) => {
     const plan = new StudyPlan({
       userId,
       weeklySchedule,
-      dailyTasks
+      dailyTasks,
     });
 
     await plan.save();
 
     res.json({
-      message: 'Study plan generated',
+      message: "Study plan generated",
       planId: plan._id,
       weeklySchedule,
-      dailyTasks
+      dailyTasks,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -54,7 +56,7 @@ exports.getStudyPlan = async (req, res) => {
     const plan = await StudyPlan.findOne({ userId }).sort({ generatedAt: -1 });
 
     if (!plan) {
-      return res.status(404).json({ message: 'Study plan not found' });
+      return res.status(404).json({ message: "Study plan not found" });
     }
 
     res.json(plan);
@@ -71,21 +73,21 @@ exports.updateTaskCompletion = async (req, res) => {
 
     const plan = await StudyPlan.findOne({ userId });
     if (!plan) {
-      return res.status(404).json({ message: 'Study plan not found' });
+      return res.status(404).json({ message: "Study plan not found" });
     }
 
     // Find and update task
     for (let dayTasks of plan.dailyTasks) {
-      const task = dayTasks.tasks.find(t => t._id.toString() === taskId);
+      const task = dayTasks.tasks.find((t) => t._id.toString() === taskId);
       if (task) {
         task.completed = completed;
         plan.updatedAt = new Date();
         await plan.save();
-        return res.json({ message: 'Task updated', plan });
+        return res.json({ message: "Task updated", plan });
       }
     }
 
-    res.status(404).json({ message: 'Task not found' });
+    res.status(404).json({ message: "Task not found" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

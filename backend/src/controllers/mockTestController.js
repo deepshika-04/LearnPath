@@ -1,31 +1,31 @@
-const axios = require('axios');
-const Quiz = require('../models/Quiz');
+const axios = require("axios");
+const Quiz = require("../models/Quiz");
 
 // Conduct mock test
 exports.getMockTest = async (req, res) => {
   try {
     const { targetCompany, difficulty } = req.query;
-    
+
     // Request mock test questions from ML service
     const mockResponse = await axios.post(
       `${process.env.ML_SERVICE_URL}/generate-mock-test`,
       {
         targetCompany,
         difficulty,
-        totalQuestions: 50
-      }
+        totalQuestions: 50,
+      },
     );
 
     res.json({
-      quizType: 'Mock',
+      quizType: "Mock",
       totalQuestions: mockResponse.data.totalQuestions,
       duration: 120, // minutes
-      questions: mockResponse.data.questions.map(q => ({
+      questions: mockResponse.data.questions.map((q) => ({
         id: q._id,
         topic: q.topic,
         question: q.question,
-        options: q.options
-      }))
+        options: q.options,
+      })),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -41,9 +41,9 @@ exports.submitMockTest = async (req, res) => {
     // Save mock test as quiz
     const mockQuiz = new Quiz({
       userId,
-      quizType: 'Mock',
+      quizType: "Mock",
       totalQuestions: answers.length,
-      answers
+      answers,
     });
 
     // Calculate results
@@ -63,18 +63,18 @@ exports.submitMockTest = async (req, res) => {
       {
         answers,
         targetCompany,
-        percentageScore: mockQuiz.percentageScore
-      }
+        percentageScore: mockQuiz.percentageScore,
+      },
     );
 
     res.json({
-      message: 'Mock test submitted',
+      message: "Mock test submitted",
       quizId: mockQuiz._id,
       performanceAnalysis: analysisResponse.data.analysis,
       weakAreas: analysisResponse.data.weakAreas,
       readinessFeedback: analysisResponse.data.feedback,
       percentageScore: mockQuiz.percentageScore,
-      overallScore: mockQuiz.overallScore
+      overallScore: mockQuiz.overallScore,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -87,15 +87,15 @@ exports.getMockTestFeedback = async (req, res) => {
     const { mockTestId } = req.params;
     const quiz = await Quiz.findById(mockTestId);
 
-    if (!quiz || quiz.quizType !== 'Mock') {
-      return res.status(404).json({ message: 'Mock test not found' });
+    if (!quiz || quiz.quizType !== "Mock") {
+      return res.status(404).json({ message: "Mock test not found" });
     }
 
     res.json({
       percentageScore: quiz.percentageScore,
       overallScore: quiz.overallScore,
       totalQuestions: quiz.totalQuestions,
-      completedAt: quiz.completedAt
+      completedAt: quiz.completedAt,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

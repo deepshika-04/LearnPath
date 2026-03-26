@@ -49,6 +49,7 @@
 ## Data Flow Architecture
 
 ### 1. User Registration & Authentication
+
 ```
 User Input → Frontend Form
     ↓
@@ -66,6 +67,7 @@ Redirect to Dashboard
 ```
 
 ### 2. Diagnostic Test Flow
+
 ```
 User Clicks "Start Test" → Dashboard
     ↓
@@ -95,6 +97,7 @@ Update Dashboard with Results
 ```
 
 ### 3. Learning Path Generation
+
 ```
 User Views Dashboard → Check Skill Analysis
     ↓
@@ -122,6 +125,7 @@ Frontend Displays Learning Path
 ```
 
 ### 4. Resource Recommendation Flow
+
 ```
 User Selects Topics → Resources Page
     ↓
@@ -145,6 +149,7 @@ Frontend Displays Cards
 ```
 
 ### 5. Progress Tracking
+
 ```
 User Completes Topic → Study Plan
     ↓
@@ -217,6 +222,7 @@ StudyPlan
 ## ML Service Architecture
 
 ### Skill Analysis Pipeline
+
 ```
 ┌─────────────────────────────────────┐
 │ Input: Quiz Results (topic scores)  │
@@ -258,6 +264,7 @@ StudyPlan
 ```
 
 ### Learning Path Generation Pipeline
+
 ```
 ┌──────────────────────────┐
 │ Input: Weak/Strong Topics,
@@ -307,6 +314,7 @@ StudyPlan
 ```
 
 ### Resource Recommendation Pipeline
+
 ```
 ┌────────────────────────────────┐
 │ Input: User Topics,            │
@@ -476,6 +484,7 @@ ML Service Error Handling:
 ## Scalability Considerations
 
 ### Horizontal Scaling
+
 ```
 Load Balancer
     ├─ Backend Servers (Multiple instances)
@@ -485,6 +494,7 @@ Load Balancer
 ```
 
 ### Database Optimization
+
 ```
 Indexes:
 ├─ User: email (unique)
@@ -500,6 +510,7 @@ Queries:
 ```
 
 ### Caching Strategy
+
 ```
 Frontend Cache:
 ├─ API responses in localStorage

@@ -1,33 +1,33 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../utils/api';
-import { authUtils } from '../utils/auth';
-import '../styles/auth.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiClient } from "../utils/api";
+import { authUtils } from "../utils/auth";
+import "../styles/auth.css";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const result = await apiClient.login({ email, password });
-      
+
       if (result.token) {
         authUtils.setToken(result.token);
         authUtils.setUser(result.user);
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        setError(result.message || 'Login failed');
+        setError(result.message || "Login failed");
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -38,9 +38,9 @@ function Login() {
       <div className="auth-box">
         <h1>LearnPath</h1>
         <h2>Login</h2>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -57,11 +57,13 @@ function Login() {
             required
           />
           <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p>Don't have an account? <a href="/register">Register here</a></p>
+        <p>
+          Don't have an account? <a href="/register">Register here</a>
+        </p>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-const axios = require('axios');
-const Resource = require('../models/Resource');
+const axios = require("axios");
+const Resource = require("../models/Resource");
 
 // Get recommended resources
 exports.getRecommendations = async (req, res) => {
@@ -9,33 +9,35 @@ exports.getRecommendations = async (req, res) => {
 
     // Get resources matching topics
     const resources = await Resource.find({
-      topic: { $in: topics.split(',') }
+      topic: { $in: topics.split(",") },
     });
 
     // Send to ML service for similarity-based filtering
     const mlResponse = await axios.post(
       `${process.env.ML_SERVICE_URL}/recommend-resources`,
       {
-        userTopics: topics.split(','),
+        userTopics: topics.split(","),
         targetCompany,
-        availableResources: resources.map(r => ({
+        availableResources: resources.map((r) => ({
           id: r._id,
           title: r.title,
           topic: r.topic,
           companyRelevance: r.companyRelevance,
           tags: r.tags,
-          difficulty: r.difficulty
-        }))
-      }
+          difficulty: r.difficulty,
+        })),
+      },
     );
 
     const recommendedIds = mlResponse.data.recommendations;
-    const recommendations = resources.filter(r => recommendedIds.includes(r._id.toString()));
+    const recommendations = resources.filter((r) =>
+      recommendedIds.includes(r._id.toString()),
+    );
 
     res.json({
-      message: 'Recommendations generated',
+      message: "Recommendations generated",
       totalResources: recommendations.length,
-      resources: recommendations.map(r => ({
+      resources: recommendations.map((r) => ({
         id: r._id,
         title: r.title,
         type: r.type,
@@ -43,8 +45,8 @@ exports.getRecommendations = async (req, res) => {
         url: r.url,
         difficulty: r.difficulty,
         companyRelevance: r.companyRelevance,
-        description: r.description
-      }))
+        description: r.description,
+      })),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -55,7 +57,7 @@ exports.getRecommendations = async (req, res) => {
 exports.getResourcesByTopic = async (req, res) => {
   try {
     const { topic, difficulty } = req.query;
-    
+
     const filter = { topic };
     if (difficulty) filter.difficulty = difficulty;
 

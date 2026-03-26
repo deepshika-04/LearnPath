@@ -1,7 +1,7 @@
-const axios = require('axios');
-const Quiz = require('../models/Quiz');
-const SkillAnalysis = require('../models/SkillAnalysis');
-const User = require('../models/User');
+const axios = require("axios");
+const Quiz = require("../models/Quiz");
+const SkillAnalysis = require("../models/SkillAnalysis");
+const User = require("../models/User");
 
 // Get ML Skill Analysis
 exports.getSkillAnalysis = async (req, res) => {
@@ -12,7 +12,7 @@ exports.getSkillAnalysis = async (req, res) => {
     // Get quiz data
     const quiz = await Quiz.findById(quizId);
     if (!quiz) {
-      return res.status(404).json({ message: 'Quiz not found' });
+      return res.status(404).json({ message: "Quiz not found" });
     }
 
     // Get user data
@@ -24,8 +24,8 @@ exports.getSkillAnalysis = async (req, res) => {
       {
         quizResults: quiz.topicScores,
         overallScore: quiz.percentageScore,
-        targetCompany: user.targetCompany
-      }
+        targetCompany: user.targetCompany,
+      },
     );
 
     // Extract ML analysis
@@ -38,19 +38,19 @@ exports.getSkillAnalysis = async (req, res) => {
       weakTopics,
       strongTopics,
       topicScores: quiz.topicScores,
-      quizResultId: quizId
+      quizResultId: quizId,
     });
 
     await skillAnalysis.save();
 
     res.json({
-      message: 'Skill analysis completed',
+      message: "Skill analysis completed",
       analysisId: skillAnalysis._id,
       skillLevel,
       weakTopics,
       strongTopics,
       topicScores: quiz.topicScores,
-      overallPercentage: quiz.percentageScore
+      overallPercentage: quiz.percentageScore,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -61,10 +61,12 @@ exports.getSkillAnalysis = async (req, res) => {
 exports.getLatestAnalysis = async (req, res) => {
   try {
     const userId = req.userId;
-    const analysis = await SkillAnalysis.findOne({ userId }).sort({ analysisDate: -1 });
+    const analysis = await SkillAnalysis.findOne({ userId }).sort({
+      analysisDate: -1,
+    });
 
     if (!analysis) {
-      return res.status(404).json({ message: 'No analysis found' });
+      return res.status(404).json({ message: "No analysis found" });
     }
 
     res.json(analysis);
@@ -77,13 +79,15 @@ exports.getLatestAnalysis = async (req, res) => {
 exports.getSkillProgression = async (req, res) => {
   try {
     const userId = req.userId;
-    const analyses = await SkillAnalysis.find({ userId }).sort({ analysisDate: 1 });
+    const analyses = await SkillAnalysis.find({ userId }).sort({
+      analysisDate: 1,
+    });
 
-    const progression = analyses.map(a => ({
+    const progression = analyses.map((a) => ({
       date: a.analysisDate,
       skillLevel: a.skillLevel,
       weakTopics: a.weakTopics,
-      strongTopics: a.strongTopics
+      strongTopics: a.strongTopics,
     }));
 
     res.json({ progression });

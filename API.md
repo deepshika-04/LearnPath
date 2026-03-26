@@ -1,10 +1,13 @@
 # API Documentation
 
 ## Base URL
+
 `http://localhost:5000/api`
 
 ## Authentication
+
 All protected endpoints require JWT token in header:
+
 ```
 Authorization: Bearer <token>
 ```
@@ -14,6 +17,7 @@ Authorization: Bearer <token>
 ## Authentication Endpoints
 
 ### Register User
+
 ```
 POST /auth/register
 Content-Type: application/json
@@ -40,6 +44,7 @@ Response:
 ```
 
 ### Login
+
 ```
 POST /auth/login
 Content-Type: application/json
@@ -58,6 +63,7 @@ Response:
 ```
 
 ### Get Profile
+
 ```
 GET /auth/profile
 Authorization: Bearer <token>
@@ -73,6 +79,7 @@ Response:
 ```
 
 ### Update Profile
+
 ```
 PUT /auth/profile
 Authorization: Bearer <token>
@@ -90,6 +97,7 @@ Content-Type: application/json
 ## Company Endpoints
 
 ### Get All Companies
+
 ```
 GET /companies/all
 
@@ -113,12 +121,14 @@ Response:
 ```
 
 ### Get Company by Name
+
 ```
 GET /companies/:name
 Example: /companies/Amazon
 ```
 
 ### Get Company Requirements
+
 ```
 GET /companies/requirements?targetCompany=Amazon
 
@@ -137,6 +147,7 @@ Response:
 ## Quiz Endpoints
 
 ### Get Diagnostic Test
+
 ```
 GET /quiz/diagnostic
 
@@ -158,6 +169,7 @@ Response:
 ```
 
 ### Submit Quiz
+
 ```
 POST /quiz/submit
 Authorization: Bearer <token>
@@ -192,12 +204,14 @@ Response:
 ```
 
 ### Get Quiz Results
+
 ```
 GET /quiz/results/:quizId
 Authorization: Bearer <token>
 ```
 
 ### Get Quiz History
+
 ```
 GET /quiz/history
 Authorization: Bearer <token>
@@ -222,6 +236,7 @@ Response:
 ## Analysis Endpoints
 
 ### Get Skill Analysis
+
 ```
 POST /analysis/skills
 Authorization: Bearer <token>
@@ -244,6 +259,7 @@ Response:
 ```
 
 ### Get Latest Analysis
+
 ```
 GET /analysis/latest
 Authorization: Bearer <token>
@@ -259,6 +275,7 @@ Response:
 ```
 
 ### Get Skill Progression
+
 ```
 GET /analysis/progression
 Authorization: Bearer <token>
@@ -287,6 +304,7 @@ Response:
 ## Learning Path Endpoints
 
 ### Generate Learning Path
+
 ```
 POST /learning-path/generate
 Authorization: Bearer <token>
@@ -311,12 +329,14 @@ Response:
 ```
 
 ### Get Learning Path
+
 ```
 GET /learning-path
 Authorization: Bearer <token>
 ```
 
 ### Update Topic Status
+
 ```
 PUT /learning-path/update-topic
 Authorization: Bearer <token>
@@ -335,6 +355,7 @@ Statuses: "Not Started", "In Progress", "Completed"
 ## Recommendation Endpoints
 
 ### Get Recommendations
+
 ```
 GET /recommendations?topics=DSA,OS&targetCompany=Amazon
 Authorization: Bearer <token>
@@ -360,11 +381,13 @@ Response:
 ```
 
 ### Get Resources by Topic
+
 ```
 GET /recommendations/topic?topic=DSA&difficulty=Easy
 ```
 
 ### Get All Resources
+
 ```
 GET /recommendations/all
 ```
@@ -374,6 +397,7 @@ GET /recommendations/all
 ## Progress Endpoints
 
 ### Get Progress
+
 ```
 GET /progress
 Authorization: Bearer <token>
@@ -396,6 +420,7 @@ Response:
 ```
 
 ### Update Topic Progress
+
 ```
 PUT /progress/update-topic
 Authorization: Bearer <token>
@@ -409,6 +434,7 @@ Content-Type: application/json
 ```
 
 ### Calculate Readiness
+
 ```
 GET /progress/readiness
 Authorization: Bearer <token>
@@ -423,6 +449,7 @@ Response:
 ```
 
 ### Get Improvement Analysis
+
 ```
 GET /progress/improvement
 Authorization: Bearer <token>
@@ -441,6 +468,7 @@ Response:
 ## Study Plan Endpoints
 
 ### Generate Study Plan
+
 ```
 POST /study-plan/generate
 Authorization: Bearer <token>
@@ -475,12 +503,14 @@ Response:
 ```
 
 ### Get Study Plan
+
 ```
 GET /study-plan
 Authorization: Bearer <token>
 ```
 
 ### Update Task Completion
+
 ```
 PUT /study-plan/update-task
 Authorization: Bearer <token>
@@ -497,6 +527,7 @@ Content-Type: application/json
 ## Mock Test Endpoints
 
 ### Get Mock Test
+
 ```
 GET /mock-test?targetCompany=Amazon&difficulty=Hard
 
@@ -518,6 +549,7 @@ Response:
 ```
 
 ### Submit Mock Test
+
 ```
 POST /mock-test/submit
 Authorization: Bearer <token>
@@ -551,6 +583,7 @@ Response:
 ```
 
 ### Get Mock Test Feedback
+
 ```
 GET /mock-test/feedback/:mockTestId
 Authorization: Bearer <token>
@@ -571,6 +604,7 @@ Response:
 ### Base URL: `http://localhost:5001`
 
 ### Analyze Skills
+
 ```
 POST /analyze-skills
 Content-Type: application/json
@@ -598,6 +632,7 @@ Response:
 ```
 
 ### Generate Learning Path
+
 ```
 POST /generate-learning-path
 {
@@ -617,6 +652,7 @@ Response:
 ```
 
 ### Recommend Resources
+
 ```
 POST /recommend-resources
 {
@@ -637,6 +673,7 @@ Response:
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "message": "Invalid input parameters"
@@ -644,6 +681,7 @@ Response:
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "message": "Invalid or expired token"
@@ -651,6 +689,7 @@ Response:
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "message": "Resource not found"
@@ -658,6 +697,7 @@ Response:
 ```
 
 ### 500 Server Error
+
 ```json
 {
   "message": "Internal server error"
@@ -674,6 +714,7 @@ Response:
 ## Pagination
 
 Some endpoints support pagination:
+
 ```
 GET /endpoint?page=1&limit=10
 ```

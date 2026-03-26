@@ -8,7 +8,11 @@
     "dev": "nodemon server.js",
     "seed": "node scripts/seedData.js"
   },
-  "keywords": ["placement", "preparation", "learning"],
+  "keywords": [
+    "placement",
+    "preparation",
+    "learning"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

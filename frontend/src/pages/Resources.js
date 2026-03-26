@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { apiClient } from '../utils/api';
-import { authUtils } from '../utils/auth';
-import '../styles/resources.css';
+import React, { useState, useEffect } from "react";
+import { apiClient } from "../utils/api";
+import { authUtils } from "../utils/auth";
+import "../styles/resources.css";
 
 function Resources() {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTopic, setSelectedTopic] = useState('DSA');
+  const [selectedTopic, setSelectedTopic] = useState("DSA");
 
-  const topics = ['DSA', 'DBMS', 'OS', 'CN', 'Aptitude'];
+  const topics = ["DSA", "DBMS", "OS", "CN", "Aptitude"];
 
   useEffect(() => {
     loadResources();
@@ -18,16 +18,16 @@ function Resources() {
     try {
       const token = authUtils.getToken();
       const user = authUtils.getUser();
-      
+
       const response = await apiClient.getRecommendations(
         selectedTopic,
         user.targetCompany,
-        token
+        token,
       );
-      
+
       setResources(response.resources || []);
     } catch (error) {
-      console.error('Error loading resources:', error);
+      console.error("Error loading resources:", error);
     } finally {
       setLoading(false);
     }
@@ -38,10 +38,10 @@ function Resources() {
       <h2>Learning Resources</h2>
 
       <div className="topic-filter">
-        {topics.map(topic => (
+        {topics.map((topic) => (
           <button
             key={topic}
-            className={`topic-btn ${selectedTopic === topic ? 'active' : ''}`}
+            className={`topic-btn ${selectedTopic === topic ? "active" : ""}`}
             onClick={() => setSelectedTopic(topic)}
           >
             {topic}
@@ -64,10 +64,17 @@ function Resources() {
                 <div className="resource-meta">
                   <span className="difficulty">{resource.difficulty}</span>
                   {resource.companyRelevance && (
-                    <span className="company-tag">{resource.companyRelevance[0]}</span>
+                    <span className="company-tag">
+                      {resource.companyRelevance[0]}
+                    </span>
                   )}
                 </div>
-                <a href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-link">
+                <a
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="resource-link"
+                >
                   Open Resource →
                 </a>
               </div>
@@ -78,7 +85,10 @@ function Resources() {
         </div>
       )}
 
-      <button onClick={() => window.location.href = '/dashboard'} className="back-btn">
+      <button
+        onClick={() => (window.location.href = "/dashboard")}
+        className="back-btn"
+      >
         Back to Dashboard
       </button>
     </div>

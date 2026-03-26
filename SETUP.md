@@ -3,6 +3,7 @@
 ## Quick Start
 
 ### 1. Clone Repository
+
 ```bash
 git clone <repo-url>
 cd LearnPath
@@ -11,17 +12,20 @@ cd LearnPath
 ### 2. Backend Setup
 
 #### Install Dependencies
+
 ```bash
 cd backend
 npm install
 ```
 
 #### Configure Environment
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env`:
+
 ```
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/learnpath
@@ -31,6 +35,7 @@ NODE_ENV=development
 ```
 
 #### Start MongoDB
+
 ```bash
 # Windows - if installed as service, it runs automatically
 # Or run: mongod
@@ -43,11 +48,13 @@ sudo systemctl start mongod
 ```
 
 #### Seed Database
+
 ```bash
 npm run seed
 ```
 
 #### Start Backend Server
+
 ```bash
 npm run dev
 # Server runs on http://localhost:5000
@@ -56,6 +63,7 @@ npm run dev
 ### 3. ML Service Setup
 
 #### Create Virtual Environment
+
 ```bash
 cd ml-service
 python -m venv venv
@@ -68,22 +76,26 @@ source venv/bin/activate
 ```
 
 #### Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 #### Configure Environment
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env`:
+
 ```
 PORT=5001
 FLASK_ENV=development
 ```
 
 #### Start ML Service
+
 ```bash
 python app.py
 # Service runs on http://localhost:5001
@@ -92,12 +104,14 @@ python app.py
 ### 4. Frontend Setup
 
 #### Install Dependencies
+
 ```bash
 cd frontend
 npm install
 ```
 
 #### Start Development Server
+
 ```bash
 npm start
 # App runs on http://localhost:3000
@@ -106,6 +120,7 @@ npm start
 ## Testing the Application
 
 ### 1. Registration
+
 - Navigate to `http://localhost:3000/register`
 - Fill form:
   - Name: "John Doe"
@@ -116,34 +131,41 @@ npm start
 - Click Register
 
 ### 2. Take Diagnostic Test
+
 - Dashboard → "Start Test"
 - Answer 25 questions (5 per topic)
 - View results
 
 ### 3. View Skill Analysis
+
 - Results page shows skill level
 - Weak and strong topics identified
 
 ### 4. Generate Learning Path
+
 - Dashboard → "View Path"
 - System generates personalized roadmap
 - Topics ordered by prerequisites and priority
 
 ### 5. Explore Resources
+
 - Dashboard → "Explore Resources"
 - Filter by topic
 - View recommendations
 
 ### 6. Check Progress
+
 - Dashboard → "View Progress"
 - See readiness percentage
 - Track topic completion
 
 ### 7. Generate Study Plan
+
 - Dashboard → "Get Schedule"
 - View weekly and daily tasks
 
 ### 8. Take Mock Test
+
 - Dashboard → "Take Test"
 - Full-length company-level assessment
 - Get feedback and readiness assessment
@@ -151,6 +173,7 @@ npm start
 ## API Testing with cURL
 
 ### Registration
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -164,6 +187,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 ```
 
 ### Login
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -174,11 +198,13 @@ curl -X POST http://localhost:5000/api/auth/login \
 ```
 
 ### Get Diagnostic Test
+
 ```bash
 curl http://localhost:5000/api/quiz/diagnostic
 ```
 
 ### Get Companies
+
 ```bash
 curl http://localhost:5000/api/companies/all
 ```
@@ -186,6 +212,7 @@ curl http://localhost:5000/api/companies/all
 ## Database Seeding
 
 Default seed data includes:
+
 - **Companies**: Amazon, Google, Microsoft, Meta, TCS, Infosys
 - **Questions**: 6 sample questions (1 per topic)
 - **Resources**: 4 sample learning resources
@@ -195,21 +222,25 @@ To add more data, modify `backend/scripts/seedData.js`
 ## Troubleshooting
 
 ### Backend Won't Start
+
 - Check if MongoDB is running: `mongod --version`
 - Check port 5000 is not in use
 - Verify .env file configuration
 
 ### ML Service Error
+
 - Ensure Python 3.8+ is installed
 - Virtual environment activated
 - All packages installed: `pip list`
 
 ### Frontend Connection Issues
+
 - Backend must be running (port 5000)
 - ML Service must be running (port 5001)
 - Check API_BASE_URL in `frontend/src/utils/api.js`
 
 ### Database Connection
+
 - Check MongoDB URI in .env
 - MongoDB must be running
 - Check connection string format
@@ -244,6 +275,7 @@ project/
 ## Development Workflow
 
 ### 1. Start All Services
+
 ```bash
 # Terminal 1 - Backend
 cd backend && npm run dev
@@ -256,12 +288,14 @@ cd frontend && npm start
 ```
 
 ### 2. Make Changes
+
 - Edit files in respective folders
 - Frontend hot-reloads automatically
 - Backend requires restart
 - ML service requires restart
 
 ### 3. Test Changes
+
 - Test in browser at `http://localhost:3000`
 - Check browser console for errors
 - Check backend logs for API errors
@@ -270,18 +304,21 @@ cd frontend && npm start
 ## Performance Optimization
 
 ### Frontend
+
 - Images optimization
 - Code splitting with React.lazy()
 - API call caching
 - Local storage for tokens
 
 ### Backend
+
 - Database indexing
 - Query optimization
 - Response compression
 - Rate limiting
 
 ### ML Service
+
 - Model caching
 - Batch predictions
 - Feature preprocessing optimization
@@ -301,6 +338,7 @@ cd frontend && npm start
 ## Production Deployment
 
 ### Environment Variables
+
 ```
 NODE_ENV=production
 MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/learnpath
@@ -310,6 +348,7 @@ CORS_ORIGIN=https://frontend-domain.com
 ```
 
 ### Build Frontend
+
 ```bash
 cd frontend
 npm run build
@@ -317,6 +356,7 @@ npm run build
 ```
 
 ### Deploy Backend
+
 ```bash
 # Push to Heroku/Railway
 git push heroku main
@@ -324,6 +364,7 @@ git push heroku main
 ```
 
 ### Deploy ML Service
+
 ```bash
 # Push to Render/Heroku
 git push render main

@@ -5,6 +5,7 @@ A comprehensive full-stack web application designed to help students prepare for
 ## Features
 
 ### 1. **Authentication Module** ✅
+
 - User registration with name, email, password
 - Login authentication with JWT tokens
 - Profile management
@@ -12,6 +13,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Study hours configuration
 
 ### 2. **Company Dataset Module** ✅
+
 - Pre-configured company profiles (Amazon, Google, Microsoft, TCS, Infosys, etc.)
 - Topic weightage for each company
 - Difficulty levels
@@ -19,6 +21,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Company-specific focus areas
 
 ### 3. **Diagnostic Test Module** ✅
+
 - Adaptive diagnostic quiz (25 questions across 5 topics)
 - Topics: DSA, DBMS, OS, CN, Aptitude
 - Multiple difficulty levels
@@ -26,6 +29,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Detailed performance analysis
 
 ### 4. **ML-Based Skill Analysis** ✅
+
 - Decision Tree classifier for skill assessment
 - Random Forest ensemble model
 - Identifies skill level (Beginner/Intermediate/Advanced)
@@ -33,12 +37,14 @@ A comprehensive full-stack web application designed to help students prepare for
 - Confidence scoring
 
 ### 5. **Company-Specific Skill Gap Analysis** ✅
+
 - Compares user skills vs company requirements
 - Priority-ranked topic suggestions
 - Customized improvement recommendations
 - Company-aligned preparation focus
 
 ### 6. **Learning Path Generation** ✅
+
 - **Topological Sorting DAG** implementation
 - Prerequisite-based topic ordering
 - Priority-ranked topics (High/Medium/Low)
@@ -46,6 +52,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Adaptive difficulty based on skill level
 
 ### 7. **Resource Recommendation System** ✅
+
 - **Cosine Similarity** content-based filtering
 - Multi-source resources (Videos, Articles, Problems)
 - Company relevance tagging
@@ -53,6 +60,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Curated learning materials database
 
 ### 8. **Study Plan Generator** ✅
+
 - Daily and weekly schedules
 - Personalized task allocation
 - Adapts to user's study hours/day
@@ -60,6 +68,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Milestone-based learning
 
 ### 9. **Progress Tracking Dashboard** ✅
+
 - Topic-wise progress visualization
 - Readiness percentage calculation
 - Improvement trends analysis
@@ -67,6 +76,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Performance metrics
 
 ### 10. **Feedback & Adaptive Learning** ✅
+
 - Mini-tests after each topic
 - Dynamic skill level updates
 - Learning path re-optimization
@@ -74,6 +84,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - Continuous assessment loop
 
 ### 11. **Final Mock Test** ✅
+
 - Full-length company-level mock test
 - 50 curated questions (company-specific)
 - Real interview simulation
@@ -84,12 +95,14 @@ A comprehensive full-stack web application designed to help students prepare for
 ## Tech Stack
 
 ### Frontend
+
 - **React.js** 18.2 - UI library
 - **React Router** - Navigation
 - **CSS3** - Styling with gradient themes
 - **Axios** - API calls
 
 ### Backend
+
 - **Node.js** - Runtime
 - **Express.js** - Web framework
 - **MongoDB** - Database
@@ -97,6 +110,7 @@ A comprehensive full-stack web application designed to help students prepare for
 - **Mongoose** - ODM
 
 ### ML Service
+
 - **Python Flask** - ML API server
 - **scikit-learn** - ML algorithms
   - Decision Tree Classifier
@@ -176,48 +190,57 @@ LearnPath/
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `GET /api/auth/profile` - Get user profile
 - `PUT /api/auth/profile` - Update profile
 
 ### Companies
+
 - `GET /api/companies/all` - Get all companies
 - `GET /api/companies/:name` - Get company details
 - `GET /api/companies/requirements` - Get company requirements
 
 ### Quiz
+
 - `GET /api/quiz/diagnostic` - Get diagnostic test
 - `POST /api/quiz/submit` - Submit quiz answers
 - `GET /api/quiz/results/:quizId` - Get results
 - `GET /api/quiz/history` - Get quiz history
 
 ### Skill Analysis
+
 - `POST /api/analysis/skills` - Perform ML analysis
 - `GET /api/analysis/latest` - Get latest analysis
 - `GET /api/analysis/progression` - Get skill progression
 
 ### Learning Path
+
 - `POST /api/learning-path/generate` - Generate path
 - `GET /api/learning-path` - Get current path
 - `PUT /api/learning-path/update-topic` - Update topic status
 
 ### Resources
+
 - `GET /api/recommendations` - Get recommendations
 - `GET /api/recommendations/topic` - Get by topic
 - `GET /api/recommendations/all` - All resources
 
 ### Progress
+
 - `GET /api/progress` - Get progress
 - `PUT /api/progress/update-topic` - Update progress
 - `GET /api/progress/readiness` - Calculate readiness
 
 ### Study Plan
+
 - `POST /api/study-plan/generate` - Generate plan
 - `GET /api/study-plan` - Get plan
 - `PUT /api/study-plan/update-task` - Update task
 
 ### Mock Test
+
 - `GET /api/mock-test` - Get mock test
 - `POST /api/mock-test/submit` - Submit test
 - `GET /api/mock-test/feedback/:mockTestId` - Get feedback
@@ -225,11 +248,13 @@ LearnPath/
 ## Installation & Setup
 
 ### Prerequisites
+
 - Node.js (v14+)
 - Python (v3.8+)
 - MongoDB (local or cloud)
 
 ### Backend Setup
+
 ```bash
 cd backend
 npm install
@@ -240,6 +265,7 @@ npm run dev   # Start backend
 ```
 
 ### ML Service Setup
+
 ```bash
 cd ml-service
 python -m venv venv
@@ -250,6 +276,7 @@ python app.py
 ```
 
 ### Frontend Setup
+
 ```bash
 cd frontend
 npm install
@@ -259,6 +286,7 @@ npm start
 ## Database Models
 
 ### User
+
 ```
 {
   name: String,
@@ -272,6 +300,7 @@ npm start
 ```
 
 ### Company
+
 ```
 {
   name: String,
@@ -289,6 +318,7 @@ npm start
 ```
 
 ### Quiz
+
 ```
 {
   userId: ObjectId,
@@ -308,6 +338,7 @@ npm start
 ## ML Algorithms
 
 ### Skill Analysis
+
 1. **Decision Tree Classifier**
    - Max depth: 5
    - Input: Topic-wise scores
@@ -318,6 +349,7 @@ npm start
    - Ensemble voting for final prediction
 
 ### Learning Path Generation
+
 - **Topological Sorting (Kahn's Algorithm)**
 - DAG representation of prerequisites
 - Topics sorted based on:
@@ -327,6 +359,7 @@ npm start
   - Estimated completion time
 
 ### Resource Recommendation
+
 - **Cosine Similarity**
 - User profile = topic preferences
 - Resource profile = topic + difficulty + type
@@ -335,31 +368,37 @@ npm start
 ## Features Implementation
 
 ### 1. Authentication
+
 - JWT-based token authentication
 - Bcrypt password hashing
 - Protected routes with middleware
 
 ### 2. Skill Assessment
+
 - Diagnostic test with adaptive difficulty
 - ML-based classification
 - Weak/strong topic identification
 
 ### 3. Personalized Learning Path
+
 - Topological DAG for prerequisites
 - Company-specific priority ranking
 - Estimated study duration
 
 ### 4. Resource Curation
+
 - Content-based similarity filtering
 - Company-relevant tagging
 - Multi-source resource database
 
 ### 5. Progress Tracking
+
 - Topic-wise completion tracking
 - Readiness percentage calculation
 - Improvement trend analysis
 
 ### 6. Adaptive Learning
+
 - Dynamic difficulty adjustment
 - Topic re-prioritization
 - Continuous assessment
@@ -379,6 +418,7 @@ npm start
 ## Key Algorithms
 
 ### Topological Sorting
+
 ```
 - Represents topics as nodes in a DAG
 - Edges represent prerequisites
@@ -387,6 +427,7 @@ npm start
 ```
 
 ### Cosine Similarity
+
 ```
 - User profile: binary vector of selected topics
 - Resource profile: [topic_score, difficulty, type]
@@ -395,6 +436,7 @@ npm start
 ```
 
 ### Ensemble Classification
+
 ```
 - Decision Tree prediction
 - Random Forest prediction
@@ -447,17 +489,20 @@ pytest
 ## Deployment
 
 ### Frontend (Vercel/Netlify)
+
 ```bash
 npm run build
 # Deploy build/ folder
 ```
 
 ### Backend (Heroku/Railway)
+
 ```bash
 git push heroku main
 ```
 
 ### ML Service (Heroku/Render)
+
 ```bash
 git push render main
 ```

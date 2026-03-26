@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../utils/api';
-import { authUtils } from '../utils/auth';
-import '../styles/dashboard.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiClient } from "../utils/api";
+import { authUtils } from "../utils/auth";
+import "../styles/dashboard.css";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ function Dashboard() {
   const [stats, setStats] = useState({
     readiness: 0,
     quizzesTaken: 0,
-    topicsCompleted: 0
+    topicsCompleted: 0,
   });
 
   useEffect(() => {
@@ -25,14 +25,14 @@ function Dashboard() {
       const token = authUtils.getToken();
       const progress = await apiClient.getProgress(token);
       const readiness = await apiClient.calculateReadiness(token);
-      
+
       setStats({
         readiness: readiness.readinessPercentage || 0,
         topicsCompleted: progress.topicProgress?.length || 0,
-        quizzesTaken: 0
+        quizzesTaken: 0,
       });
     } catch (error) {
-      console.error('Error loading progress:', error);
+      console.error("Error loading progress:", error);
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ function Dashboard() {
 
   const handleLogout = () => {
     authUtils.logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -53,7 +53,9 @@ function Dashboard() {
           <p>Welcome, {user?.name}!</p>
         </div>
         <div className="header-right">
-          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </header>
 
@@ -84,37 +86,39 @@ function Dashboard() {
         <div className="action-card">
           <h3>Diagnostic Test</h3>
           <p>Assess your current skills across all topics</p>
-          <button onClick={() => navigate('/diagnostic-test')}>Start Test</button>
+          <button onClick={() => navigate("/diagnostic-test")}>
+            Start Test
+          </button>
         </div>
-        
+
         <div className="action-card">
           <h3>Learning Path</h3>
           <p>View your personalized preparation roadmap</p>
-          <button onClick={() => navigate('/learning-path')}>View Path</button>
+          <button onClick={() => navigate("/learning-path")}>View Path</button>
         </div>
 
         <div className="action-card">
           <h3>Resources</h3>
           <p>Recommended videos, articles, and problems</p>
-          <button onClick={() => navigate('/resources')}>Explore</button>
+          <button onClick={() => navigate("/resources")}>Explore</button>
         </div>
 
         <div className="action-card">
           <h3>Progress Tracking</h3>
           <p>Monitor your improvement and trends</p>
-          <button onClick={() => navigate('/progress')}>View Progress</button>
+          <button onClick={() => navigate("/progress")}>View Progress</button>
         </div>
 
         <div className="action-card">
           <h3>Study Plan</h3>
           <p>Daily and weekly study schedule</p>
-          <button onClick={() => navigate('/study-plan')}>Get Schedule</button>
+          <button onClick={() => navigate("/study-plan")}>Get Schedule</button>
         </div>
 
         <div className="action-card">
           <h3>Mock Test</h3>
           <p>Full-length company-level mock test</p>
-          <button onClick={() => navigate('/mock-test')}>Take Test</button>
+          <button onClick={() => navigate("/mock-test")}>Take Test</button>
         </div>
       </div>
     </div>

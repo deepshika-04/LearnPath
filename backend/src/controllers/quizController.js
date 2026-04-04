@@ -1,5 +1,6 @@
 const Question = require("../models/Question");
 const Quiz = require("../models/Quiz");
+const Progress = require("../models/Progress");
 
 // Get diagnostic test questions
 exports.getDiagnosticTest = async (req, res) => {
@@ -78,6 +79,48 @@ exports.submitQuiz = async (req, res) => {
     });
 
     await quiz.save();
+
+    // Update Progress document
+    let progress = await Progress.findOne({ userId });
+    if (!progress) {
+      progress = new Progress({ userId, topicProgress: [] });
+    }
+
+    // Update topic progress
+    for (let topic of Object.keys(topicPercentages)) {
+      const existingTopic = progress.topicProgress.find((t) => t.topic === topic);
+      
+      if (existingTopic) {
+        // Update existing topic: recalculate average score
+        const newAverage =
+          (existingTopic.averageScore * existingTopic.quizzesTaken +
+            topicPercentages[topic]) /
+          (existingTopic.quizzesTaken + 1);
+        
+        existingTopic.averageScore = newAverage;
+        existingTopic.quizzesTaken += 1;
+        existingTopic.completedPercentage = newAverage;
+        existingTopic.lastUpdated = new Date();
+      } else {
+        // Add new topic
+        progress.topicProgress.push({
+          topic,
+          completedPercentage: topicPercentages[topic],
+          quizzesTaken: 1,
+          averageScore: topicPercentages[topic],
+          lastUpdated: new Date(),
+        });
+      }
+    }
+
+    // Calculate overall progress
+    if (progress.topicProgress.length > 0) {
+      const totalAverage = progress.topicProgress.reduce((sum, t) => sum + t.completedPercentage, 0) / progress.topicProgress.length;
+      progress.overallProgress = totalAverage;
+      progress.readinessPercentage = Math.min(totalAverage * 1.2, 100); // Readiness is slightly higher
+    }
+
+    await progress.save();
 
     res.json({
       message: "Quiz submitted successfully",

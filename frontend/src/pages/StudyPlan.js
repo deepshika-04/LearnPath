@@ -16,9 +16,24 @@ function StudyPlan() {
     try {
       const token = authUtils.getToken();
       const response = await apiClient.getStudyPlan(token);
-      setPlan(response);
+      console.log("Study Plan Response:", response);
+      
+      if (response && response.weeklySchedule) {
+        setPlan(response);
+        setError("");
+      } else if (response && Object.keys(response).length > 0) {
+        // Response exists but might not have the expected fields
+        console.warn("Study plan structure:", response);
+        setPlan(response);
+        setError("");
+      } else {
+        setError("No study plan data found. Please generate one.");
+        setPlan(null);
+      }
     } catch (error) {
+      console.error("Error loading study plan:", error);
       setError("Error loading study plan. Please generate one first.");
+      setPlan(null);
     } finally {
       setLoading(false);
     }
@@ -58,29 +73,32 @@ function StudyPlan() {
 
       <div className="weekly-schedule">
         <h3>Weekly Schedule</h3>
-        <div className="schedule-grid">
-          {plan.weeklySchedule &&
-            plan.weeklySchedule.map((day, idx) => (
+        {plan.weeklySchedule && plan.weeklySchedule.length > 0 ? (
+          <div className="schedule-grid">
+            {plan.weeklySchedule.map((day, idx) => (
               <div key={idx} className="day-card">
                 <h4>{day.day}</h4>
-                <p className="topics">Topics: {day.topics.join(", ")}</p>
-                <p className="hours">Study Hours: {day.estimatedHours}h</p>
+                <p className="topics">Topics: {day.topics?.join(", ") || "N/A"}</p>
+                <p className="hours">Study Hours: {day.estimatedHours || 0}h</p>
                 <span className={`priority ${day.priority?.toLowerCase()}`}>
-                  {day.priority}
+                  {day.priority || "Medium"}
                 </span>
               </div>
             ))}
-        </div>
+          </div>
+        ) : (
+          <p className="empty-message">No weekly schedule available</p>
+        )}
       </div>
 
       <div className="daily-tasks">
         <h3>Daily Tasks (Next 14 Days)</h3>
-        <div className="tasks-list">
-          {plan.dailyTasks &&
-            plan.dailyTasks.map((dayTasks, idx) => (
+        {plan.dailyTasks && plan.dailyTasks.length > 0 ? (
+          <div className="tasks-list">
+            {plan.dailyTasks.map((dayTasks, idx) => (
               <div key={idx} className="day-tasks">
-                <h4>{dayTasks.date}</h4>
-                {dayTasks.tasks &&
+                <h4>{new Date(dayTasks.date).toLocaleDateString()}</h4>
+                {dayTasks.tasks && dayTasks.tasks.length > 0 ? (
                   dayTasks.tasks.map((task, tidx) => (
                     <div key={tidx} className="task-item">
                       <input type="checkbox" defaultChecked={task.completed} />
@@ -89,10 +107,16 @@ function StudyPlan() {
                       </span>
                       <span className="duration">{task.hours}h</span>
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <p className="no-tasks">No tasks for this day</p>
+                )}
               </div>
             ))}
-        </div>
+          </div>
+        ) : (
+          <p className="empty-message">No daily tasks available</p>
+        )}
       </div>
 
       <button

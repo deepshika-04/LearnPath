@@ -86,12 +86,28 @@ function DiagnosticTest() {
       setResult(response);
       setSubmitted(true);
 
-      // Get skill analysis
-      const analysis = await apiClient.getSkillAnalysis(response.quizId, token);
-      console.log("Skill analysis:", analysis);
+      try {
+        // Get skill analysis
+        const analysis = await apiClient.getSkillAnalysis(response.quizId, token);
+        console.log("Skill analysis:", analysis);
 
-      // Generate learning path immediately after diagnostic completion
-      await apiClient.generateLearningPath(token);
+        // Generate learning path immediately after diagnostic completion
+        await apiClient.generateLearningPath(token);
+        console.log("Learning path generated successfully");
+
+        // Generate study plan after learning path
+        try {
+          await apiClient.generateStudyPlan(token);
+          console.log("Study plan generated successfully");
+        } catch (planError) {
+          console.warn("Error generating study plan:", planError?.message);
+          // Continue even if study plan generation fails
+        }
+      } catch (analysisError) {
+        console.warn("Error generating learning path:", analysisError?.message);
+        // Don't fail completely - still navigate to learning path
+        // The page will show a message if no learning path exists
+      }
 
       // Move user to the learning path page so the next step is visible
       navigate("/learning-path");

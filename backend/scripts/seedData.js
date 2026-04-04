@@ -5,6 +5,10 @@ const mongoose = require("mongoose");
 const Company = require("../src/models/Company");
 const Question = require("../src/models/Question");
 const Resource = require("../src/models/Resource");
+const User = require("../src/models/User");
+const SkillAnalysis = require("../src/models/SkillAnalysis");
+const LearningPath = require("../src/models/LearningPath");
+const StudyPlan = require("../src/models/StudyPlan");
 
 const envPath = path.resolve(__dirname, "../.env");
 const envExamplePath = path.resolve(__dirname, "../.env.example");
@@ -246,6 +250,139 @@ const sampleResources = [
   },
 ];
 
+// Sample test user
+const testUser = {
+  name: "Test User",
+  email: "test@example.com",
+  password: "hashedPassword123", // In real scenario, this would be hashed
+  targetCompany: "Amazon",
+  studyHoursPerDay: 3,
+};
+
+// Sample skill analysis
+const sampleSkillAnalysis = {
+  skillLevel: "Intermediate",
+  weakTopics: ["CN", "Aptitude"],
+  strongTopics: ["DSA", "DBMS"],
+  topicScores: {
+    DSA: 75,
+    DBMS: 68,
+    OS: 55,
+    CN: 40,
+    Aptitude: 35,
+  },
+};
+
+// Sample learning path
+const sampleLearningPath = {
+  targetCompany: "Amazon",
+  topics: [
+    {
+      topicName: "DSA",
+      priority: "High",
+      prerequisites: [],
+      estimatedDays: 60,
+      status: "In Progress",
+    },
+    {
+      topicName: "DBMS",
+      priority: "High",
+      prerequisites: [],
+      estimatedDays: 25,
+      status: "Not Started",
+    },
+    {
+      topicName: "OS",
+      priority: "Medium",
+      prerequisites: ["DSA"],
+      estimatedDays: 20,
+      status: "Not Started",
+    },
+    {
+      topicName: "CN",
+      priority: "Medium",
+      prerequisites: [],
+      estimatedDays: 15,
+      status: "Not Started",
+    },
+    {
+      topicName: "Aptitude",
+      priority: "Low",
+      prerequisites: [],
+      estimatedDays: 10,
+      status: "Not Started",
+    },
+  ],
+  totalDaysEstimated: 130,
+};
+
+// Sample study plan
+const sampleStudyPlan = {
+  weeklySchedule: [
+    {
+      day: "Monday",
+      topics: ["DSA - Arrays", "DSA - Strings"],
+      estimatedHours: 3,
+      priority: "High",
+    },
+    {
+      day: "Tuesday",
+      topics: ["DSA - Trees"],
+      estimatedHours: 3,
+      priority: "High",
+    },
+    {
+      day: "Wednesday",
+      topics: ["DBMS - SQL Basics"],
+      estimatedHours: 2.5,
+      priority: "High",
+    },
+    {
+      day: "Thursday",
+      topics: ["DSA - Graphs", "DSA - Dynamic Programming"],
+      estimatedHours: 3,
+      priority: "High",
+    },
+    {
+      day: "Friday",
+      topics: ["OS - Process Management"],
+      estimatedHours: 2,
+      priority: "Medium",
+    },
+    {
+      day: "Saturday",
+      topics: ["CN - Networking Basics", "Aptitude - Quantitative"],
+      estimatedHours: 2,
+      priority: "Medium",
+    },
+    {
+      day: "Sunday",
+      topics: ["Revision - DSA", "Mock Test"],
+      estimatedHours: 2,
+      priority: "Low",
+    },
+  ],
+  dailyTasks: [
+    {
+      date: new Date(),
+      tasks: [
+        {
+          topic: "DSA",
+          subtopic: "Array Problems",
+          hours: 1.5,
+          completed: true,
+        },
+        {
+          topic: "DSA",
+          subtopic: "String Algorithms",
+          hours: 1.5,
+          completed: false,
+        },
+      ],
+    },
+  ],
+};
+
 async function seedDatabase() {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
@@ -259,6 +396,10 @@ async function seedDatabase() {
     await Company.deleteMany({});
     await Question.deleteMany({});
     await Resource.deleteMany({});
+    await User.deleteMany({});
+    await SkillAnalysis.deleteMany({});
+    await LearningPath.deleteMany({});
+    await StudyPlan.deleteMany({});
 
     // Insert companies
     await Company.insertMany(companies);
@@ -271,6 +412,35 @@ async function seedDatabase() {
     // Insert resources
     await Resource.insertMany(sampleResources);
     console.log(`${sampleResources.length} resources inserted`);
+
+    // Create test user
+    const user = new User(testUser);
+    await user.save();
+    console.log("Test user created");
+
+    // Create skill analysis
+    const skillAnalysis = new SkillAnalysis({
+      ...sampleSkillAnalysis,
+      userId: user._id,
+    });
+    await skillAnalysis.save();
+    console.log("Skill analysis created");
+
+    // Create learning path
+    const learningPath = new LearningPath({
+      ...sampleLearningPath,
+      userId: user._id,
+    });
+    await learningPath.save();
+    console.log("Learning path created");
+
+    // Create study plan
+    const studyPlan = new StudyPlan({
+      ...sampleStudyPlan,
+      userId: user._id,
+    });
+    await studyPlan.save();
+    console.log("Study plan created");
 
     console.log("Database seeded successfully!");
     process.exit(0);

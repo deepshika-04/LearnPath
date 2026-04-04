@@ -17,15 +17,27 @@ function LearningPath() {
       const token = authUtils.getToken();
       const response = await apiClient.getLearningPath(token);
 
-      if (response.topics) {
+      if (response.topics && response.topics.length > 0) {
         setPath(response);
-      } else {
+        setError("");
+      } else if (!response.topics) {
         setError(
           "No learning path found. Please take the diagnostic test first.",
         );
       }
     } catch (error) {
-      setError("Error loading learning path: " + error.message);
+      console.error("Error loading learning path:", error);
+      const errorMsg = error?.message || "Error loading learning path";
+      
+      if (errorMsg.includes("404")) {
+        setError(
+          "No learning path found. Please take the diagnostic test first, or click below to generate one.",
+        );
+      } else if (errorMsg.includes("diagnostic test")) {
+        setError("No learning path found. Please take the diagnostic test first.");
+      } else {
+        setError(`Error: ${errorMsg}`);
+      }
     } finally {
       setLoading(false);
     }

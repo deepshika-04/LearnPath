@@ -9,29 +9,97 @@ exports.generateLearningPath = async (req, res) => {
     const userId = req.userId;
     const user = await User.findById(userId);
 
+    if (!user) {
+      return res.status(404).json({ 
+        message: "User not found",
+        hint: "Please log in again"
+      });
+    }
+
     // Get latest skill analysis
-    const skillAnalysis = await SkillAnalysis.findOne({ userId }).sort({
+    let skillAnalysis = await SkillAnalysis.findOne({ userId }).sort({
       analysisDate: -1,
     });
+    
+    // If no skill analysis, try to create one from latest quiz
     if (!skillAnalysis) {
-      return res
-        .status(404)
-        .json({ message: "Please complete diagnostic test first" });
+      const Quiz = require("../models/Quiz");
+      const latestQuiz = await Quiz.findOne({ userId }).sort({ createdAt: -1 });
+      
+      if (!latestQuiz) {
+        return res.status(404).json({ 
+          message: "Please complete diagnostic test first",
+          hint: "You need to take the diagnostic test to generate a learning path"
+        });
+      }
+
+      // Create default skill analysis from quiz
+      const overallPercentage = latestQuiz.percentageScore;
+      let defaultSkillLevel = "Intermediate";
+      
+      if (overallPercentage >= 70) {
+        defaultSkillLevel = "Advanced";
+      } else if (overallPercentage >= 50) {
+        defaultSkillLevel = "Intermediate";
+      } else {
+        defaultSkillLevel = "Beginner";
+      }
+
+      const topicScoresArray = Object.entries(latestQuiz.topicScores || {}).map(([topic, score]) => ({
+        topic,
+        score,
+      }));
+      topicScoresArray.sort((a, b) => a.score - b.score);
+
+      const defaultWeakTopics = topicScoresArray.slice(0, 2).map((t) => t.topic);
+      const defaultStrongTopics = topicScoresArray.slice(-2).map((t) => t.topic);
+
+      skillAnalysis = new SkillAnalysis({
+        userId,
+        skillLevel: defaultSkillLevel,
+        weakTopics: defaultWeakTopics,
+        strongTopics: defaultStrongTopics,
+        topicScores: latestQuiz.topicScores,
+        quizResultId: latestQuiz._id,
+      });
+      
+      await skillAnalysis.save();
+      console.log("[LearningPath] Created default skill analysis from quiz");
     }
 
     // Request learning path from ML service
-    const pathResponse = await axios.post(
-      `${process.env.ML_SERVICE_URL}/generate-learning-path`,
-      {
-        weakTopics: skillAnalysis.weakTopics,
-        strongTopics: skillAnalysis.strongTopics,
-        targetCompany: user.targetCompany,
-        skillLevel: skillAnalysis.skillLevel,
-        studyHoursPerDay: user.studyHoursPerDay,
-      },
-    );
+    let learningPath = [];
+    let totalDaysEstimated = 0;
 
-    const { learningPath, totalDaysEstimated } = pathResponse.data;
+    try {
+      const pathResponse = await axios.post(
+        `${process.env.ML_SERVICE_URL}/generate-learning-path`,
+        {
+          weakTopics: skillAnalysis.weakTopics,
+          strongTopics: skillAnalysis.strongTopics,
+          targetCompany: user.targetCompany,
+          skillLevel: skillAnalysis.skillLevel,
+          studyHoursPerDay: user.studyHoursPerDay,
+        },
+        { timeout: 5000 }
+      );
+
+      learningPath = pathResponse.data.learningPath || [];
+      totalDaysEstimated = pathResponse.data.totalDaysEstimated || 0;
+    } catch (mlError) {
+      console.warn("ML service unavailable, generating default learning path:", mlError.message);
+      
+      // Fallback: Generate default learning path based on skill analysis
+      const topics = ["DSA", "DBMS", "OS", "CN", "Aptitude"];
+      learningPath = topics.map((topic) => ({
+        topicName: topic,
+        priority: skillAnalysis.weakTopics.includes(topic) ? "High" : skillAnalysis.strongTopics.includes(topic) ? "Low" : "Medium",
+        prerequisites: topic === "OS" ? ["DSA"] : topic === "CN" ? ["OS"] : [],
+        estimatedDays: skillAnalysis.weakTopics.includes(topic) ? 30 : skillAnalysis.strongTopics.includes(topic) ? 15 : 20,
+        status: "Not Started",
+      }));
+      totalDaysEstimated = learningPath.reduce((sum, t) => sum + t.estimatedDays, 0);
+    }
 
     // Save to database
     const path = new LearningPath({

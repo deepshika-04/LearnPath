@@ -19,17 +19,50 @@ exports.getSkillAnalysis = async (req, res) => {
     const user = await User.findById(userId);
 
     // Send to ML service
-    const mlResponse = await axios.post(
-      `${process.env.ML_SERVICE_URL}/analyze-skills`,
-      {
-        quizResults: quiz.topicScores,
-        overallScore: quiz.percentageScore,
-        targetCompany: user.targetCompany,
-      },
-    );
+    let skillLevel = "Intermediate";
+    let weakTopics = [];
+    let strongTopics = [];
 
-    // Extract ML analysis
-    const { skillLevel, weakTopics, strongTopics } = mlResponse.data;
+    try {
+      const mlResponse = await axios.post(
+        `${process.env.ML_SERVICE_URL}/analyze-skills`,
+        {
+          quizResults: quiz.topicScores,
+          overallScore: quiz.percentageScore,
+          targetCompany: user.targetCompany,
+        },
+        { timeout: 5000 }
+      );
+
+      skillLevel = mlResponse.data.skillLevel || "Intermediate";
+      weakTopics = mlResponse.data.weakTopics || [];
+      strongTopics = mlResponse.data.strongTopics || [];
+    } catch (mlError) {
+      console.warn("ML service unavailable, generating default skill analysis:", mlError.message);
+      
+      // Fallback: Generate skill analysis based on quiz scores
+      const overallPercentage = quiz.percentageScore;
+      
+      if (overallPercentage >= 70) {
+        skillLevel = "Advanced";
+      } else if (overallPercentage >= 50) {
+        skillLevel = "Intermediate";
+      } else {
+        skillLevel = "Beginner";
+      }
+
+      // Identify weak and strong topics from quiz scores
+      const topicScoresArray = Object.entries(quiz.topicScores).map(([topic, score]) => ({
+        topic,
+        score,
+      }));
+      topicScoresArray.sort((a, b) => a.score - b.score);
+
+      weakTopics = topicScoresArray.slice(0, 2).map((t) => t.topic); // Lowest 2 topics
+      strongTopics = topicScoresArray.slice(-2).map((t) => t.topic); // Highest 2 topics
+    }
+
+    // Extract ML analysis (or use fallback)
 
     // Save skill analysis
     const skillAnalysis = new SkillAnalysis({

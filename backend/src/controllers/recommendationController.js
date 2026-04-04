@@ -7,32 +7,45 @@ exports.getRecommendations = async (req, res) => {
     const userId = req.userId;
     const { topics, targetCompany } = req.query;
 
+    console.log(`[Recommendations] Request - Topics: ${topics}, Company: ${targetCompany}`);
+
     // Get resources matching topics
     const resources = await Resource.find({
       topic: { $in: topics.split(",") },
     });
 
-    // Send to ML service for similarity-based filtering
-    const mlResponse = await axios.post(
-      `${process.env.ML_SERVICE_URL}/recommend-resources`,
-      {
-        userTopics: topics.split(","),
-        targetCompany,
-        availableResources: resources.map((r) => ({
-          id: r._id,
-          title: r.title,
-          topic: r.topic,
-          companyRelevance: r.companyRelevance,
-          tags: r.tags,
-          difficulty: r.difficulty,
-        })),
-      },
-    );
+    console.log(`[Recommendations] Found ${resources.length} resources for topics: ${topics}`);
+    if (resources.length > 0) {
+      console.log("Sample resource:", resources[0]);
+    }
 
-    const recommendedIds = mlResponse.data.recommendations;
-    const recommendations = resources.filter((r) =>
-      recommendedIds.includes(r._id.toString()),
-    );
+    try {
+      const mlResponse = await axios.post(
+        `${process.env.ML_SERVICE_URL}/recommend-resources`,
+        {
+          userTopics: topics.split(","),
+          targetCompany,
+          availableResources: resources.map((r) => ({
+            id: r._id,
+            title: r.title,
+            topic: r.topic,
+            companyRelevance: r.companyRelevance,
+            tags: r.tags,
+            difficulty: r.difficulty,
+          })),
+        },
+        { timeout: 5000 }
+      );
+
+      const recommendedIds = mlResponse.data.recommendations;
+      recommendations = resources.filter((r) =>
+        recommendedIds.includes(r._id.toString()),
+      );
+    } catch (mlError) {
+      console.warn("ML service unavailable, returning all matching resources:", mlError.message);
+      // Fall back to returning all matching resources
+      recommendations = resources;
+    }
 
     res.json({
       message: "Recommendations generated",

@@ -123,3 +123,30 @@
 .resource-link:hover {
   text-decoration: underline;
 }
+
+.error {
+  background-color: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  padding: 20px;
+  color: #c62828;
+  margin-bottom: 20px;
+}
+
+.error p {
+  margin: 0 0 15px 0;
+}
+
+.error button {
+  background-color: #ef5350;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.error button:hover {
+  background-color: #e53935;
+}

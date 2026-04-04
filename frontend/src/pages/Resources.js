@@ -6,6 +6,7 @@ import "../styles/resources.css";
 function Resources() {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("DSA");
 
   const topics = ["DSA", "DBMS", "OS", "CN", "Aptitude"];
@@ -16,8 +17,22 @@ function Resources() {
 
   const loadResources = async () => {
     try {
+      setError("");
+      setLoading(true);
       const token = authUtils.getToken();
       const user = authUtils.getUser();
+
+      if (!token) {
+        setError("Not authenticated. Please log in.");
+        setResources([]);
+        return;
+      }
+
+      if (!user || !user.targetCompany) {
+        setError("Company not set in profile.");
+        setResources([]);
+        return;
+      }
 
       const response = await apiClient.getRecommendations(
         selectedTopic,
@@ -25,9 +40,16 @@ function Resources() {
         token,
       );
 
-      setResources(response.resources || []);
+      if (response.error || response.message?.includes("error")) {
+        setError(response.error || response.message || "Failed to load resources");
+        setResources([]);
+      } else {
+        setResources(response.resources || []);
+      }
     } catch (error) {
       console.error("Error loading resources:", error);
+      setError(error.message || "Failed to load resources");
+      setResources([]);
     } finally {
       setLoading(false);
     }
@@ -51,6 +73,11 @@ function Resources() {
 
       {loading ? (
         <div className="loading">Loading resources...</div>
+      ) : error ? (
+        <div className="error">
+          <p>{error}</p>
+          <button onClick={loadResources}>Retry</button>
+        </div>
       ) : (
         <div className="resources-grid">
           {resources.length > 0 ? (

@@ -5,16 +5,25 @@ import "../styles/mock-test.css";
 
 function MockTest() {
   const [test, setTest] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
   const user = authUtils.getUser();
+
+  const formatPercent = (value) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num.toFixed(2) : "0.00";
+  };
 
   const loadMockTest = async () => {
     try {
       setLoading(true);
       const response = await apiClient.getMockTest(user.targetCompany);
       setTest(response);
+      setAnswers(new Array(response.questions.length).fill(null));
+      setCurrentQuestion(0);
     } catch (error) {
       console.error("Error loading mock test:", error);
     } finally {
@@ -27,16 +36,21 @@ function MockTest() {
       setLoading(true);
       const token = authUtils.getToken();
 
-      // Simulate answers (in real app, user would select answers)
-      const answers = test.questions.map((q, idx) => ({
-        questionId: q.id,
-        selectedAnswer: Math.floor(Math.random() * 4),
+      const unansweredCount = answers.filter((answer) => answer === null).length;
+      if (unansweredCount > 0) {
+        alert(`Please answer all questions before submitting. ${unansweredCount} question(s) are still unanswered.`);
+        return;
+      }
+
+      const formattedAnswers = test.questions.map((question, idx) => ({
+        questionId: question.id,
+        selectedAnswer: answers[idx],
       }));
 
       const response = await apiClient.submitMockTest(
         {
           targetCompany: user.targetCompany,
-          answers,
+          answers: formattedAnswers,
         },
         token,
       );
@@ -76,7 +90,7 @@ function MockTest() {
         <h2>Mock Test Results</h2>
 
         <div className="result-score">
-          <h3>Performance Score: {result.percentageScore?.toFixed(2)}%</h3>
+          <h3>Performance Score: {formatPercent(result.percentageScore)}%</h3>
           <p>
             {result.overallScore} / {result.totalQuestions} Correct
           </p>
@@ -121,9 +135,60 @@ function MockTest() {
       <h2>Mock Test in Progress</h2>
       {loading ? (
         <div className="loading">Loading...</div>
+      ) : test ? (
+        <div className="quiz-content">
+          <h3>{test.questions[currentQuestion].question}</h3>
+          <div className="topic-tag">{test.questions[currentQuestion].topic}</div>
+
+          <div className="options">
+            {test.questions[currentQuestion].options.map((option, idx) => (
+              <label key={idx} className="option">
+                <input
+                  type="radio"
+                  name={`mock-answer-${currentQuestion}`}
+                  checked={answers[currentQuestion] === idx}
+                  onChange={() => {
+                    const nextAnswers = [...answers];
+                    nextAnswers[currentQuestion] = idx;
+                    setAnswers(nextAnswers);
+                  }}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="quiz-navigation">
+            <button
+              className="nav-btn"
+              disabled={currentQuestion === 0}
+              onClick={() => setCurrentQuestion((value) => value - 1)}
+            >
+              Previous
+            </button>
+            {currentQuestion === test.questions.length - 1 ? (
+              <button onClick={handleSubmitMockTest} className="submit-btn">
+                Submit Mock Test
+              </button>
+            ) : (
+              <button
+                className="nav-btn"
+                onClick={() => setCurrentQuestion((value) => value + 1)}
+              >
+                Next
+              </button>
+            )}
+          </div>
+
+          <div className="quiz-status">
+            <p>
+              Answered: {answers.filter((answer) => answer !== null).length} / {test.questions.length}
+            </p>
+          </div>
+        </div>
       ) : (
-        <button onClick={handleSubmitMockTest} className="submit-btn">
-          Complete Mock Test
+        <button onClick={loadMockTest} className="start-btn">
+          Start Mock Test
         </button>
       )}
     </div>

@@ -47,6 +47,7 @@ exports.generateLearningPath = async (req, res) => {
       message: "Learning path generated successfully",
       pathId: path._id,
       learningPath,
+      topics: learningPath,
       totalDaysEstimated,
       targetCompany: user.targetCompany,
     });

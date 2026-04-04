@@ -36,7 +36,10 @@ function LearningPath() {
       setLoading(true);
       const token = authUtils.getToken();
       const response = await apiClient.generateLearningPath(token);
-      setPath(response);
+      setPath({
+        ...response,
+        topics: response.topics || response.learningPath || [],
+      });
       setError("");
     } catch (error) {
       setError("Error generating path: " + error.message);

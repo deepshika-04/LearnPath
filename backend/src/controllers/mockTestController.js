@@ -38,6 +38,23 @@ exports.submitMockTest = async (req, res) => {
     const userId = req.userId;
     const { targetCompany, answers } = req.body;
 
+    if (!targetCompany || !Array.isArray(answers) || answers.length === 0) {
+      return res.status(400).json({ message: "Target company and answers are required" });
+    }
+
+    const generatedMock = await axios.post(
+      `${process.env.ML_SERVICE_URL}/generate-mock-test`,
+      {
+        targetCompany,
+        difficulty: req.body.difficulty || "Medium",
+        totalQuestions: answers.length,
+      },
+    );
+
+    const questionKey = new Map(
+      generatedMock.data.questions.map((question) => [question._id, question]),
+    );
+
     // Save mock test as quiz
     const mockQuiz = new Quiz({
       userId,
@@ -46,13 +63,29 @@ exports.submitMockTest = async (req, res) => {
       answers,
     });
 
-    // Calculate results
+    // Calculate results using generated answer key
     let correctCount = 0;
-    let topicScores = { DSA: 0, DBMS: 0, OS: 0, CN: 0, Aptitude: 0 };
-    let topicCounts = { DSA: 0, DBMS: 0, OS: 0, CN: 0, Aptitude: 0 };
+    const weakAreas = new Set();
+    const topicTotals = { DSA: 0, DBMS: 0, OS: 0, CN: 0, Aptitude: 0 };
+    const topicCorrect = { DSA: 0, DBMS: 0, OS: 0, CN: 0, Aptitude: 0 };
 
-    // Process answers (simplified - would need actual questions in production)
-    mockQuiz.percentageScore = (correctCount / answers.length) * 100;
+    for (const answer of answers) {
+      const question = questionKey.get(answer.questionId);
+      if (!question) continue;
+
+      topicTotals[question.topic] = (topicTotals[question.topic] || 0) + 1;
+
+      const isCorrect = Number(answer.selectedAnswer) === Number(question.correctAnswer);
+      if (isCorrect) {
+        correctCount += 1;
+        topicCorrect[question.topic] = (topicCorrect[question.topic] || 0) + 1;
+      } else {
+        weakAreas.add(question.topic);
+      }
+    }
+
+    const percentageScore = (correctCount / answers.length) * 100;
+    mockQuiz.percentageScore = percentageScore;
     mockQuiz.overallScore = correctCount;
 
     await mockQuiz.save();
@@ -63,7 +96,8 @@ exports.submitMockTest = async (req, res) => {
       {
         answers,
         targetCompany,
-        percentageScore: mockQuiz.percentageScore,
+        percentageScore,
+        weakAreas: Array.from(weakAreas),
       },
     );
 
@@ -73,8 +107,9 @@ exports.submitMockTest = async (req, res) => {
       performanceAnalysis: analysisResponse.data.analysis,
       weakAreas: analysisResponse.data.weakAreas,
       readinessFeedback: analysisResponse.data.feedback,
-      percentageScore: mockQuiz.percentageScore,
+      percentageScore,
       overallScore: mockQuiz.overallScore,
+      totalQuestions: answers.length,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -170,7 +170,8 @@ def generate_mock_test():
                 '_id': f'q{i}',
                 'topic': ['DSA', 'DBMS', 'OS', 'CN', 'Aptitude'][i % 5],
                 'question': f'Sample Question {i+1} for {target_company}',
-                'options': ['Option A', 'Option B', 'Option C', 'Option D']
+                'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+                'correctAnswer': i % 4
             }
             for i in range(total_questions)
         ]

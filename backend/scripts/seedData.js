@@ -1,8 +1,15 @@
-require("dotenv").config();
+const fs = require("fs");
+const path = require("path");
+const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const Company = require("./src/models/Company");
-const Question = require("./src/models/Question");
-const Resource = require("./src/models/Resource");
+const Company = require("../src/models/Company");
+const Question = require("../src/models/Question");
+const Resource = require("../src/models/Resource");
+
+const envPath = path.resolve(__dirname, "../.env");
+const envExamplePath = path.resolve(__dirname, "../.env.example");
+
+dotenv.config({ path: fs.existsSync(envPath) ? envPath : envExamplePath });
 
 const companies = [
   {

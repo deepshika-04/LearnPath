@@ -97,47 +97,67 @@ class TopologicalSorter:
             ordered list of topics to study
         """
         sorted_topics = self.topological_sort()
+        topic_catalog = set(sorted_topics) | set(company_weights.keys())
         
         # Prioritize weak topics
         learning_path = []
         difficulty_multiplier = {'Beginner': 1.0, 'Intermediate': 0.8, 'Advanced': 0.6}
         
-        # Add weak topics first with high priority
+        # Add weak topics first with high priority.
+        # Quiz outputs domain-level topics (DSA/DBMS/OS/CN/Aptitude), so include
+        # company-weight topics even if they are not present in the DAG.
+        added_topics = set()
         for topic in weak_topics:
-            if topic in sorted_topics:
+            if topic in topic_catalog and topic not in added_topics:
                 priority = 'High'
                 days = int(5 * difficulty_multiplier[skill_level])
+                days = max(days, 1)
                 learning_path.append({
                     'topicName': topic,
                     'priority': priority,
                     'prerequisites': self._get_prerequisites(topic),
                     'estimatedDays': days
                 })
+                added_topics.add(topic)
         
         # Add medium priority topics (company focused)
         medium_topics = [t for t in company_weights.keys() 
                         if t not in weak_topics and t not in strong_topics]
         for topic in medium_topics[:len(medium_topics)//2]:
-            if topic in sorted_topics:
+            if topic in topic_catalog and topic not in added_topics:
                 priority = 'Medium'
                 days = int(3 * difficulty_multiplier[skill_level])
+                days = max(days, 1)
                 learning_path.append({
                     'topicName': topic,
                     'priority': priority,
                     'prerequisites': self._get_prerequisites(topic),
                     'estimatedDays': days
                 })
+                added_topics.add(topic)
         
         # Add low priority topics
         for topic in strong_topics:
-            if topic in sorted_topics:
+            if topic in topic_catalog and topic not in added_topics:
                 priority = 'Low'
                 days = int(2 * difficulty_multiplier[skill_level])
+                days = max(days, 1)
                 learning_path.append({
                     'topicName': topic,
                     'priority': priority,
                     'prerequisites': self._get_prerequisites(topic),
                     'estimatedDays': days
+                })
+                added_topics.add(topic)
+
+        # Guarantee a usable path even when weak/strong classification is sparse.
+        if not learning_path:
+            for topic in list(company_weights.keys())[:3]:
+                learning_path.append({
+                    'topicName': topic,
+                    'priority': 'Medium',
+                    'prerequisites': self._get_prerequisites(topic),
+                    'estimatedDays': max(int(3 * difficulty_multiplier[skill_level]), 1)
                 })
         
         return learning_path
@@ -151,6 +171,11 @@ class TopologicalSorter:
             'Trees': ['LinkedLists'],
             'Graphs': ['Trees', 'Queues'],
             'DynamicProgramming': ['Arrays', 'Trees'],
+            'DSA': ['Arrays'],
+            'DBMS': ['SQL'],
+            'OS': ['Processes'],
+            'CN': ['OSI'],
+            'Aptitude': ['Quantitative'],
         }
         return prerequisites.get(topic, [])
 

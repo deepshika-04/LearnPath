@@ -1,7 +1,14 @@
-require("dotenv").config();
+const fs = require("fs");
+const path = require("path");
+const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+
+const envPath = path.resolve(__dirname, ".env");
+const envExamplePath = path.resolve(__dirname, ".env.example");
+
+dotenv.config({ path: fs.existsSync(envPath) ? envPath : envExamplePath });
 
 const app = express();
 

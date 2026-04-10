@@ -46,15 +46,30 @@ function LearningPath() {
   const handleGeneratePath = async () => {
     try {
       setLoading(true);
+      setError("");
       const token = authUtils.getToken();
       const response = await apiClient.generateLearningPath(token);
-      setPath({
-        ...response,
-        topics: response.topics || response.learningPath || [],
-      });
-      setError("");
+      
+      // Check for error in response
+      if (response.message && response.message.includes("diagnostic")) {
+        setError("No learning path found. Please take the diagnostic test first.");
+        setPath(null);
+      } else if (response.message && !response.learningPath && !response.topics) {
+        // Response contains an error message, not a learning path
+        setError("Error: " + response.message);
+        setPath(null);
+      } else {
+        // Success - learning path generated
+        const pathData = {
+          ...response,
+          topics: response.topics || response.learningPath || [],
+        };
+        setPath(pathData);
+        setError("");
+      }
     } catch (error) {
       setError("Error generating path: " + error.message);
+      setPath(null);
     } finally {
       setLoading(false);
     }
@@ -71,9 +86,11 @@ function LearningPath() {
         },
         token,
       );
-      loadLearningPath();
+      // Reload learning path after status update
+      await loadLearningPath();
     } catch (error) {
       console.error("Error updating topic:", error);
+      setError("Error updating topic status: " + error.message);
     }
   };
 

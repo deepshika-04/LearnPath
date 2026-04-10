@@ -71,6 +71,7 @@ function DiagnosticTest() {
         selectedAnswer: ans,
       }));
 
+      console.log("[DiagnosticTest] Submitting quiz...");
       const response = await apiClient.submitQuiz(
         {
           quizType: "Diagnostic",
@@ -86,25 +87,45 @@ function DiagnosticTest() {
       setResult(response);
       setSubmitted(true);
 
+      // Add a small delay to ensure database writes are completed
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       try {
         // Get skill analysis
+        console.log("[DiagnosticTest] Getting skill analysis for quiz:", response.quizId);
         const analysis = await apiClient.getSkillAnalysis(response.quizId, token);
-        console.log("Skill analysis:", analysis);
+        console.log("[DiagnosticTest] Skill analysis created:", analysis);
+
+        // Add another delay to allow skill analysis to be indexed
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // Generate learning path immediately after diagnostic completion
-        await apiClient.generateLearningPath(token);
-        console.log("Learning path generated successfully");
+        console.log("[DiagnosticTest] Generating learning path...");
+        const pathResponse = await apiClient.generateLearningPath(token);
+        console.log("[DiagnosticTest] Learning path generation response:", pathResponse);
+
+        if (!pathResponse?.pathId && !pathResponse?.learningPath) {
+          throw new Error(pathResponse?.message || "Learning path generation failed");
+        }
+
+        console.log("[DiagnosticTest] Learning path generated successfully");
 
         // Generate study plan after learning path
         try {
-          await apiClient.generateStudyPlan(token);
-          console.log("Study plan generated successfully");
+          console.log("[DiagnosticTest] Generating study plan...");
+          const planResponse = await apiClient.generateStudyPlan(token);
+          console.log("[DiagnosticTest] Study plan generated successfully:", planResponse);
         } catch (planError) {
-          console.warn("Error generating study plan:", planError?.message);
+          console.warn("[DiagnosticTest] Warning - study plan generation failed:", planError?.message);
           // Continue even if study plan generation fails
         }
+
+        // Add delay before redirect to ensure learning path is queryable
+        await new Promise(resolve => setTimeout(resolve, 500));
       } catch (analysisError) {
-        console.warn("Error generating learning path:", analysisError?.message);
+        console.error("[DiagnosticTest] Error in generation pipeline:", analysisError);
+        console.error("[DiagnosticTest] Error message:", analysisError?.message);
+        console.error("[DiagnosticTest] Error full details:", analysisError);
         // Don't fail completely - still navigate to learning path
         // The page will show a message if no learning path exists
       }

@@ -7,7 +7,10 @@ const User = require("../models/User");
 exports.generateLearningPath = async (req, res) => {
   try {
     const userId = req.userId;
+    console.log("[generateLearningPath] Starting for userId:", userId);
+    
     const user = await User.findById(userId);
+    console.log("[generateLearningPath] User found:", user ? user._id : "NOT FOUND");
 
     if (!user) {
       return res.status(404).json({ 
@@ -21,10 +24,14 @@ exports.generateLearningPath = async (req, res) => {
       analysisDate: -1,
     });
     
+    console.log("[generateLearningPath] Skill analysis found:", skillAnalysis ? skillAnalysis._id : "NOT FOUND");
+    
     // If no skill analysis, try to create one from latest quiz
     if (!skillAnalysis) {
       const Quiz = require("../models/Quiz");
       const latestQuiz = await Quiz.findOne({ userId }).sort({ createdAt: -1 });
+      
+      console.log("[generateLearningPath] Latest quiz found:", latestQuiz ? latestQuiz._id : "NOT FOUND");
       
       if (!latestQuiz) {
         return res.status(404).json({ 
@@ -64,7 +71,7 @@ exports.generateLearningPath = async (req, res) => {
       });
       
       await skillAnalysis.save();
-      console.log("[LearningPath] Created default skill analysis from quiz");
+      console.log("[generateLearningPath] Created and saved default skill analysis:", skillAnalysis._id);
     }
 
     // Request learning path from ML service
@@ -86,8 +93,9 @@ exports.generateLearningPath = async (req, res) => {
 
       learningPath = pathResponse.data.learningPath || [];
       totalDaysEstimated = pathResponse.data.totalDaysEstimated || 0;
+      console.log("[generateLearningPath] ML service response received, topics:", learningPath.length);
     } catch (mlError) {
-      console.warn("ML service unavailable, generating default learning path:", mlError.message);
+      console.warn("[generateLearningPath] ML service unavailable, generating default learning path:", mlError.message);
       
       // Fallback: Generate default learning path based on skill analysis
       const topics = ["DSA", "DBMS", "OS", "CN", "Aptitude"];
@@ -99,6 +107,7 @@ exports.generateLearningPath = async (req, res) => {
         status: "Not Started",
       }));
       totalDaysEstimated = learningPath.reduce((sum, t) => sum + t.estimatedDays, 0);
+      console.log("[generateLearningPath] Using fallback learning path");
     }
 
     // Save to database
@@ -109,17 +118,19 @@ exports.generateLearningPath = async (req, res) => {
       totalDaysEstimated,
     });
 
-    await path.save();
+    const savedPath = await path.save();
+    console.log("[generateLearningPath] Learning path saved successfully:", savedPath._id);
 
     res.json({
       message: "Learning path generated successfully",
-      pathId: path._id,
+      pathId: savedPath._id,
       learningPath,
       topics: learningPath,
       totalDaysEstimated,
       targetCompany: user.targetCompany,
     });
   } catch (error) {
+    console.error("[generateLearningPath] Error:", error);
     res.status(500).json({ message: error.message });
   }
 };

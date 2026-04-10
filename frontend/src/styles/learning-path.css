@@ -1,79 +1,110 @@
 .learning-path-container {
   max-width: 900px;
-  margin: 0 auto;
-  padding: 30px;
-  background: white;
-  border-radius: 10px;
-  margin-top: 20px;
+  margin: 30px auto;
+  padding: 32px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
 }
 
 .learning-path-container h2 {
-  color: #667eea;
-  margin-bottom: 10px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  font-size: 24px;
 }
 
 .target-company {
-  color: #666;
-  margin-bottom: 5px;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .total-days {
-  color: #999;
+  color: var(--text-muted);
   font-size: 14px;
   margin-bottom: 30px;
 }
 
 .generate-btn {
-  background-color: #4caf50;
+  background-color: var(--success);
   color: white;
-  padding: 12px 30px;
+  padding: 14px 32px;
   font-size: 16px;
+  transition: all 0.2s ease;
 }
 
 .generate-btn:hover {
-  background-color: #45a049;
+  background-color: #059669;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
 }
 
 .topics-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  gap: 24px;
   margin-bottom: 30px;
 }
 
 .topic-card {
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  background-color: #fafafa;
-  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  background-color: var(--bg-surface-elevated);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
+.topic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.topic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.topic-card.priority-high::before {
+  background-color: var(--danger);
+}
 .topic-card.priority-high {
-  border-color: #f44336;
-  background-color: #ffebee;
+  background-color: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
+.topic-card.priority-medium::before {
+  background-color: var(--warning);
+}
 .topic-card.priority-medium {
-  border-color: #ff9800;
-  background-color: #fff3e0;
+  background-color: rgba(245, 158, 11, 0.05);
+  border-color: rgba(245, 158, 11, 0.2);
 }
 
+.topic-card.priority-low::before {
+  background-color: var(--success);
+}
 .topic-card.priority-low {
-  border-color: #4caf50;
-  background-color: #f1f8e9;
+  background-color: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
 .topic-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .topic-header h4 {
-  color: #333;
+  color: var(--text-primary);
   margin: 0;
+  font-size: 16px;
 }
 
 .priority-badge {
@@ -81,38 +112,48 @@
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  background-color: white;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
 }
 
 .topic-card.priority-high .priority-badge {
-  color: #f44336;
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .topic-card.priority-medium .priority-badge {
-  color: #ff9800;
+  color: var(--warning);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .topic-card.priority-low .priority-badge {
-  color: #4caf50;
+  color: var(--success);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .topic-days {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .prerequisites {
-  color: #999;
-  font-size: 12px;
-  margin-bottom: 15px;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 20px;
 }
 
 .topic-status select {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.topic-status select:hover {
+  border-color: var(--primary-color);
 }

@@ -45,6 +45,44 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "Backend running" });
 });
 
+// Diagnostic endpoint
+app.get("/api/diagnostic", async (req, res) => {
+  try {
+    const mongoose = require("mongoose");
+    const Quiz = require("./src/models/Quiz");
+    const SkillAnalysis = require("./src/models/SkillAnalysis");
+    const LearningPath = require("./src/models/LearningPath");
+
+    const dbStatus = mongoose.connection.readyState; // 0=disconnected, 1=connected
+    const quizCount = await Quiz.countDocuments();
+    const analysisCount = await SkillAnalysis.countDocuments();
+    const pathCount = await LearningPath.countDocuments();
+
+    res.json({
+      status: "Diagnostic Info",
+      database: {
+        connected: dbStatus === 1,
+        connectionState: ["disconnected", "connected", "connecting", "disconnecting"][dbStatus],
+      },
+      collections: {
+        quizzes: quizCount,
+        skillAnalyses: analysisCount,
+        learningPaths: pathCount,
+      },
+      env: {
+        mongodbUri: process.env.MONGODB_URI,
+        mlServiceUrl: process.env.ML_SERVICE_URL,
+        nodeEnv: process.env.NODE_ENV,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      error: error.message,
+      status: "Diagnostic failed"
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
